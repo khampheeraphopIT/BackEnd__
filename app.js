@@ -29,7 +29,7 @@ function authenticateToken(req, res, next) {
     if (token == null) return res.status(401).json({ status: 'forbidden', message: 'No token provided.'  });
 
     jwt.verify(token, secret, (err, user) => {
-        if (err) return res.status(403).json({ status: 'forbidden', message: 'Failed to authenticate token.' });
+        if (err) return res.status(403).json({ status: 'forbidden', message: 'Please login' });
         console.log('Decoded token',user)
 
 
@@ -43,7 +43,7 @@ function authenticateToken(req, res, next) {
 app.post('/register', jsonParser, function (req, res, next) {
     bcrypt.hash(req.body.password, saltRounds, function (err, hash) {
         connection.execute(
-            'INSERT INTO users (email, password , fname , lname) VALUES (?,?,?,?)',
+            'INSERT INTO users (email, password , fname , lname ) VALUES (?,?,?,?)',
             [req.body.email, hash, req.body.fname, req.body.lname],
             function (err, results, fields) {
                 if (err) {
@@ -207,6 +207,32 @@ app.post('/booking', authenticateToken ,(req, res) => {
     });
 });
 
+// const dns = require('dns');
+
+// function checkEmailExists(email, callback) {
+//     const domain = email.split('@')[1];
+//     dns.resolveMx(domain, (err, addresses) => {
+//         if (err || addresses.length === 0) {
+//             callback(false);
+//         } else {
+//             callback(true);
+//         }
+//     });
+// }
+// app.post('/checkDns', jsonParser, (req, res) => {
+//     const email = req.body.email;
+//     if (!email) {
+//         return res.status(400).json({ status: 'error', message: 'Email parameter is required.' });
+//     }
+//     checkEmailExists(email, (exists) => {
+//         if (exists) {
+//             res.json({ exists: true });
+//         } else {
+//             res.json({ exists: false });
+//         }
+//     });
+// });
+
 app.post('/checkEmail', jsonParser, (req, res) => {
     const email = req.body.email;  // ใช้ req.body สำหรับ POST requests
 
@@ -233,3 +259,4 @@ app.post('/checkEmail', jsonParser, (req, res) => {
 app.listen(3333, function () {
     console.log('CORS-enabled web server listening on port 3333')
 })
+
